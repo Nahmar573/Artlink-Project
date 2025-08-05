@@ -19,7 +19,8 @@
 .env.production.local
 
 #correction
-.env
+server/.env
+
 
 npm-debug.log*
 yarn-debug.log*
