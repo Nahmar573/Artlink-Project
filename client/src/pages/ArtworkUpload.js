@@ -8,51 +8,60 @@ const ArtworkUpload = () => {
     description: '',
     category: '',
     price: '',
-    image: null
+    image: null,
   });
 
   const handleChange = (e) => {
     if (e.target.name === 'image') {
-      setFormData(prev => ({ ...prev, image: e.target.files[0] }));
+      setFormData((prev) => ({ ...prev, image: e.target.files[0] }));
     } else {
-      setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+      setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
     }
   };
 
   const handleUpload = async (e) => {
-    e.preventDefault();
-    const data = new FormData();
-    data.append('title', formData.title);
-    data.append('description', formData.description);
-    data.append('category', formData.category);
-    data.append('price', formData.price);
-    data.append('image', formData.image);
+  e.preventDefault();
+  const data = new FormData();
+  data.append('title', formData.title);
+  data.append('description', formData.description);
+  data.append('category', formData.category);
+  data.append('price', formData.price);
+  data.append('image', formData.image);
 
-    try {
-      const res = await axios.post('http://localhost:5000/api/artworks/upload', data, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
-      alert('✅ Artwork uploaded successfully!');
-      console.log(res.data);
+  try {
+    const userId = localStorage.getItem('userId');
+    const userRole = localStorage.getItem('userRole');
 
-      // Reset form
-      setFormData({
-        title: '',
-        description: '',
-        category: '',
-        price: '',
-        image: null
-      });
-    } catch (err) {
-      alert('❌ Upload failed!');
-      console.error(err);
+    if (!userId) {
+      alert('You must be logged in to upload artwork.');
+      return;
     }
-  };
+
+    const res = await axios.post('http://localhost:5000/api/artworks/upload', data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'x-user-id': userId,
+        'x-user-role': userRole
+      }
+    });
+
+    alert('✅ Artwork uploaded successfully!');
+    setFormData({ title: '', description: '', category: '', price: '', image: null });
+  } catch (err) {
+    alert('❌ Upload failed!');
+    console.error(err);
+  }
+};
+
 
   return (
     <div className="form-container">
       <h2>Upload Artwork</h2>
-      <form onSubmit={handleUpload} className="form-box" encType="multipart/form-data">
+      <form
+        onSubmit={handleUpload}
+        className="form-box"
+        encType="multipart/form-data"
+      >
         <input
           type="text"
           name="title"

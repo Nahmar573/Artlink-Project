@@ -1,33 +1,41 @@
-import React, { useState, useEffect } from 'react';
+// src/pages/Login.js
+import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './FormStyles.css';
 
 const Login = ({ setIsLoggedIn }) => {
   const navigate = useNavigate();
-  const [credentials, setCredentials] = useState({
-    email: '',
-    password: ''
-  });
+  const [credentials, setCredentials] = useState({ email: '', password: '' });
 
-  useEffect(() => {
-    if (localStorage.getItem('userLoggedIn') === 'true') {
-      navigate('/upload'); // Redirect if already logged in
-    }
-  }, [navigate]);
-
-  const handleChange = (e) => {
-    setCredentials(prev => ({ ...prev, [e.target.name]: e.target.value }));
-  };
+  const handleChange = (e) =>
+    setCredentials((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/api/users/login', credentials);
+      const res = await axios.post(
+        'http://localhost:5000/api/users/login',
+        credentials
+      );
+
+      const user = res.data.user || res.data;
       localStorage.setItem('userLoggedIn', 'true');
+      localStorage.setItem('userId', user._id || user.id);
+      localStorage.setItem('userName', user.name || '');
+      localStorage.setItem('userRole', user.role || '');
+
       setIsLoggedIn(true);
       alert('✅ Login successful!');
-      navigate('/upload');
+
+      // Redirect based on role
+      if (user.role === 'artist') {
+        navigate('/upload');
+      } else if (user.role === 'buyer') {
+        navigate('/view');
+      } else {
+        navigate('/'); // fallback
+      }
     } catch (err) {
       alert('❌ Login failed!');
       console.error(err);
