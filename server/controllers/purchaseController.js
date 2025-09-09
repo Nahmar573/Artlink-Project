@@ -1,13 +1,8 @@
-// server/controllers/purchaseController.js
+
 const Artwork = require('../models/Artwork');
 const Purchase = require('../models/Purchase');
 
-/**
- * Small-fix goals (no behavior changes to listing/filtering):
- * 1) Prevent double-purchase by checking the Purchase collection (source of truth).
- * 2) Keep existing flows intact; do not rely on an isSold/sold flag (schema-agnostic).
- * 3) Optional best-effort: set an 'isSold' field on the artwork (won't break if schema lacks it).
- */
+
 const purchaseArtwork = async (req, res) => {
   try {
     const { artworkId } = req.body;

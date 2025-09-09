@@ -11,7 +11,7 @@ const artworkSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
-  sold: { type: Boolean, default: false } // NEW FIELD
+  sold: { type: Boolean, default: false } 
 }, { timestamps: true });
 
 artworkSchema.index({ title: 'text', description: 'text' });
